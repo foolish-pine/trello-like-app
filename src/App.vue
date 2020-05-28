@@ -1,28 +1,34 @@
 <template>
-  <div id="app">
-    <draggable element="ul">
-      <li v-for="task in tasks" :key="task">{{ task }}</li>
-    </draggable>
-  </div>
+  <v-app>
+    <header>
+      <v-app-bar app flat dark class="teal" height="80">
+        <v-toolbar-title
+          class="app-title"
+        >My Memo Board.
+        </v-toolbar-title>
+        <v-spacer></v-spacer>
+        
+      </v-app-bar>
+    </header>
+    <ListDisplay></ListDisplay>
+  </v-app>
 </template>
 
 <script>
-import draggable from "vuedraggable"
+import ListDisplay from "./components/ListDisplay";
 
 export default {
-  name: "App",
-
   components: {
-    draggable
+    ListDisplay
   },
-
-  data: () => ({
-    tasks: [
-        "task1",
-        "task2",
-        "task3",
-        "task4",
-      ]
-  }),
+  data: () => ({})
 };
 </script>
+
+<style lang="scss">
+@import url('https://fonts.googleapis.com/css2?family=Lobster&display=swap');
+.app-title {
+font-family: 'Lobster', cursive;
+font-size: 2.5rem !important;
+}
+</style>
