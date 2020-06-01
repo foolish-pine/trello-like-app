@@ -1,101 +1,72 @@
 import Vue from "vue";
 import Vuex from "vuex";
+import firebase from "firebase";
 
 Vue.use(Vuex);
 
 export default new Vuex.Store({
   state: {
-    cards: [
-      {
-        id: "1",
-        title: "TO DO",
-        memos: [
-          { id: 1, value: "掃除" },
-          { id: 2, value: "洗濯" },
-          { id: 3, value: "買い物" },
-          { id: 4, value: "ゴミ捨て" },
-        ],
-      },
-      {
-        id: "2",
-        title: "Study",
-        memos: [
-          { id: 5, value: "JavaScript" },
-          { id: 6, value: "TypeScript" },
-          { id: 7, value: "Vue.js" },
-        ],
-      },
-    ],
+    user: {}, // ユーザー情報
+    cards: [], // ユーザーのカード
   },
   mutations: {
-    // クリックされたカードと同じidのcardを削除
-    deleteCard(state, cardId) {
-      for (let i = 0; i < state.cards.length; i++) {
-        if (state.cards[i].id === cardId) {
-          state.cards.splice(i, 1);
-        }
-      }
+    setLoginUser(state, user) {
+      state.user = user;
     },
-    // クリックされたメモと同じidのmemoを削除
-    deleteMemo(state, memoId) {
-      for (let i = 0; i < state.cards.length; i++) {
-        for (let j = 0; j < state.cards[i].memos.length; j++) {
-          if (state.cards[i].memos[j].id === memoId) {
-            state.cards[i].memos.splice(j, 1);
-          }
-        }
-      }
+    doLogout(state) {
+      state.user = {};
     },
-    // idを付与してcardを新規作成
-    addNewCard(state) {
-      let cardIdMax = 0;
-      for (let i = 0; i < state.cards.length; i++) {
-        if (state.cards[i].id > cardIdMax) {
-          cardIdMax = state.cards[i].id;
-        }
-      }
-      // 新しいカードのid = 既存のカードのidの最大値 + 1
-      const newCardId = cardIdMax + 1;
-      state.cards.push({ id: newCardId, title: "", memos: [] });
+    clearCards(state) {
+      state.cards = [];
     },
-    // idを付与してmemoを新規作成
-    addNewMemo(state, cardId) {
-      let memoIdMax = 0;
-      for (let i = 0; i < state.cards.length; i++) {
-        for (let j = 0; j < state.cards[i].memos.length; j++) {
-          if (state.cards[i].memos[j].id > memoIdMax) {
-            memoIdMax = state.cards[i].memos[j].id;
-          }
-        }
-      }
-      // 新しいメモのid = 既存のメモのidの最大値 + 1
-      const newMemoId = memoIdMax + 1;
-      for (let i = 0; i < state.cards.length; i++) {
-        if (state.cards[i].id === cardId) {
-          state.cards[i].memos.push({ id: newMemoId, value: "" });
-        }
-      }
+    fetchCards(state, { id, index, cardName, memos }) {
+      state.cards.push({ id, index, cardName, memos });
     },
   },
   actions: {
-    // カードを削除
-    deleteCard({ commit }, cardId) {
-      commit("deleteCard", cardId);
+    // ログイン処理
+    doLogin() {
+      const provider = new firebase.auth.GoogleAuthProvider();
+      firebase.auth().signInWithPopup(provider);
     },
-    // メモを削除
-    deleteMemo({ commit }, memoId) {
-      commit("deleteMemo", memoId);
+    // ログアウト処理
+    doLogout({ commit }) {
+      firebase.auth().signOut();
+      commit("doLogout");
     },
-    // カードを追加
-    addNewCard({ commit }) {
-      commit("addNewCard");
+    // ユーザー情報のセット
+    setLoginUser({ commit }, user) {
+      commit("setLoginUser", user);
     },
-    // メモを追加
-    addNewMemo({ commit }, cardId) {
-      commit("addNewMemo", cardId);
+    setMemoList({ commit }, val) {
+      commit("setMemoList", val);
+    },
+    // stateのcardsをクリアする
+    clearCards({ commit }) {
+      commit("clearCards");
+    },
+    // ユーザーのカードを取得
+    fetchCards({ dispatch, getters, commit }) {
+      firebase
+        .firestore()
+        .collection(`users/${getters.uid}/cards`)
+        .orderBy("index", "asc")
+        .onSnapshot((snapshot) => {
+          dispatch("clearCards");
+          snapshot.forEach((doc) => {
+            commit("fetchCards", {
+              id: doc.id,
+              index: doc.get("index"),
+              cardName: doc.get("cardName"),
+              memos: doc.get("memos"),
+            });
+          });
+        });
     },
   },
   getters: {
-    list: (state) => state.list,
+    uid: (state) => (state.user ? state.user.uid : ""),
+    photoURL: (state) => (state.user ? state.user.photoURL : ""),
+    cards: (state) => (state.cards ? state.cards : ""),
   },
 });
