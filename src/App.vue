@@ -10,6 +10,7 @@
           <v-avatar size="40" class="mr-3">
             <img :src="photoURL" />
           </v-avatar>
+          <div class="mr-5">{{ displayName }}</div>
           <v-btn @click="doLogout" outlined>ログアウト</v-btn>
         </div>
       </v-app-bar>
@@ -30,7 +31,7 @@ export default {
       if (user) {
         // ログイン後ユーザー情報をセットする
         this.setLoginUser(user);
-        this.fetchCards()
+        this.fetchCards();
       } else {
         this.doLogout(user);
         this.$router.push("/", () => {});
@@ -41,7 +42,7 @@ export default {
     ...mapActions(["setLoginUser", "doLogin", "doLogout", "fetchCards"])
   },
   computed: {
-    ...mapGetters(["uid", "photoURL"])
+    ...mapGetters(["uid", "displayName", "photoURL"])
   }
 };
 </script>

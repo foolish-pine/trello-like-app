@@ -66,6 +66,7 @@ export default new Vuex.Store({
   },
   getters: {
     uid: (state) => (state.user ? state.user.uid : ""),
+    displayName: (state) => (state.user ? state.user.displayName : ""),
     photoURL: (state) => (state.user ? state.user.photoURL : ""),
     cards: (state) => (state.cards ? state.cards : ""),
   },
