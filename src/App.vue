@@ -7,10 +7,10 @@
         <v-spacer></v-spacer>
 
         <div v-if="uid" key="login" class="d-flex align-center">
-          <v-avatar size="40" class="mr-3">
+          <v-avatar size="40" class="mr-3 hidden-sm-and-down">
             <img :src="photoURL" />
           </v-avatar>
-          <div class="mr-5">{{ displayName }}</div>
+          <div class="mr-5 hidden-sm-and-down">{{ displayName }}</div>
           <v-btn @click="doLogout" outlined>ログアウト</v-btn>
         </div>
       </v-app-bar>
