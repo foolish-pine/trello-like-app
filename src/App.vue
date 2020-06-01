@@ -2,33 +2,54 @@
   <v-app>
     <header>
       <v-app-bar app flat dark class="teal" height="80">
-        <v-toolbar-title
-          class="app-title"
-        >My Memo Board.
-        </v-toolbar-title>
+        <v-toolbar-title v-if="uid" class="app-title">My Memo Board.</v-toolbar-title>
+
         <v-spacer></v-spacer>
-        
+
+        <div v-if="uid" key="login" class="d-flex align-center">
+          <v-avatar size="40" class="mr-3">
+            <img :src="photoURL" />
+          </v-avatar>
+          <v-btn @click="doLogout" outlined>ログアウト</v-btn>
+        </div>
       </v-app-bar>
     </header>
-    <ListDisplay></ListDisplay>
+    <router-view />
   </v-app>
 </template>
 
 <script>
-import ListDisplay from "./components/ListDisplay";
+import { mapActions } from "vuex";
+import { mapGetters } from "vuex";
+import firebase from "firebase";
 
 export default {
-  components: {
-    ListDisplay
+  data: () => ({}),
+  created() {
+    firebase.auth().onAuthStateChanged(user => {
+      if (user) {
+        // ログイン後ユーザー情報をセットする
+        this.setLoginUser(user);
+        this.fetchCards()
+      } else {
+        this.doLogout(user);
+        this.$router.push("/", () => {});
+      }
+    });
   },
-  data: () => ({})
+  methods: {
+    ...mapActions(["setLoginUser", "doLogin", "doLogout", "fetchCards"])
+  },
+  computed: {
+    ...mapGetters(["uid", "photoURL"])
+  }
 };
 </script>
 
 <style lang="scss">
-@import url('https://fonts.googleapis.com/css2?family=Lobster&display=swap');
+@import url("https://fonts.googleapis.com/css2?family=Lobster&display=swap");
 .app-title {
-font-family: 'Lobster', cursive;
-font-size: 2.5rem !important;
+  font-family: "Lobster", cursive;
+  font-size: 2.5rem !important;
 }
 </style>

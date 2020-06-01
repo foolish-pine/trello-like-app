@@ -1,16 +1,49 @@
 <template>
-  <div class="home">
-    <img alt="Vue logo" src="../assets/logo.png">
-    <HelloWorld msg="Welcome to Your Vue.js App"/>
-  </div>
+  <v-content class="teal">
+    <v-container text-center justify-center>
+      <h1 class="app-title mb-5">My Memo Board.</h1>
+      <div v-if="!uid" key="logout" class="align-center">
+        <v-btn @click="doLogin" large color="white" class="black--text">Googleアカウントでログイン</v-btn>
+      </div>
+    </v-container>
+  </v-content>
 </template>
 
 <script>
-// @ is an alias to /src
+import { mapActions } from "vuex";
+import { mapGetters } from "vuex";
+import firebase from "firebase";
 
 export default {
   name: "Home",
-  components: {
+  components: {},
+  created() {
+    firebase.auth().onAuthStateChanged(user => {
+      if (user) {
+        // ログイン後ユーザー情報をセットする
+        this.$router.push("/memo", () => {});
+      }
+    });
+  },
+  methods: {
+    ...mapActions(["doLogin", "setLoginUser"])
+  },
+  computed: {
+    ...mapGetters(["uid"])
   }
-}
+};
 </script>
+
+<style lang="scss" scoped>
+h1 {
+  font-size: 4rem !important;
+  text-align: center;
+  color: #fff;
+}
+.fv {
+  width: 100%;
+  max-width: 100vw;
+  margin: 0;
+  padding: 0;
+}
+</style>
