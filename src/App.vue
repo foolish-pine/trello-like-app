@@ -48,7 +48,6 @@ export default {
 </script>
 
 <style lang="scss">
-@import url("https://fonts.googleapis.com/css2?family=Lobster&display=swap");
 .app-title {
   font-family: "Lobster", cursive;
   font-size: 2.5rem !important;
