@@ -29,7 +29,7 @@ export default {
   created() {
     firebase.auth().onAuthStateChanged(user => {
       if (user) {
-        // ログイン後ユーザー情報をセットする
+        // ログイン後ユーザー情報とユーザーのカードをセットする
         this.setLoginUser(user);
         this.fetchCards();
       } else {

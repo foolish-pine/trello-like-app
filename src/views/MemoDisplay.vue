@@ -144,6 +144,16 @@ export default {
           });
         });
     },
+    // カード名を編集
+    editCardName(cardId, event) {
+      firebase
+        .firestore()
+        .collection(`users/${this.uid}/cards`)
+        .doc(cardId)
+        .update({
+          cardName: event
+        });
+    },
     // カード入れ替え時にカードのindexを更新する
     updateCardOrder(event) {
       for (let i = 0; i < event.from.children.length; i++) {
@@ -153,25 +163,6 @@ export default {
           .doc(event.from.children[i].id)
           .update({ index: i });
       }
-    },
-    // メモを削除
-    deleteMemo(cardId, cardIndex, memoIndex) {
-      // カードのすべてのメモを取得し、配列に入れる
-      const targetCardMemos = this.cards[cardIndex].memos.slice(
-        0,
-        this.cards[cardIndex].memos.length
-      );
-      // その配列から、削除ボタンが押されたメモを削除する
-      targetCardMemos.splice(memoIndex, 1);
-      // メモ削除後の配列をJSON形式でfirebaseに保存
-      const modifiedCardMemos = JSON.parse(
-        JSON.stringify(targetCardMemos, null, 2)
-      );
-      firebase
-        .firestore()
-        .collection(`users/${this.uid}/cards`)
-        .doc(cardId)
-        .update({ memos: modifiedCardMemos });
     },
     // メモを追加
     addNewMemo(cardId, cardIndex) {
@@ -192,15 +183,24 @@ export default {
         .doc(cardId)
         .update({ memos: modifiedCardMemos });
     },
-    // カードの名前を編集
-    editCardName(cardId, event) {
+    // メモを削除
+    deleteMemo(cardId, cardIndex, memoIndex) {
+      // カードのすべてのメモを取得し、配列に入れる
+      const targetCardMemos = this.cards[cardIndex].memos.slice(
+        0,
+        this.cards[cardIndex].memos.length
+      );
+      // その配列から、削除ボタンが押されたメモを削除する
+      targetCardMemos.splice(memoIndex, 1);
+      // メモ削除後の配列をJSON形式でfirebaseに保存
+      const modifiedCardMemos = JSON.parse(
+        JSON.stringify(targetCardMemos, null, 2)
+      );
       firebase
         .firestore()
         .collection(`users/${this.uid}/cards`)
         .doc(cardId)
-        .update({
-          cardName: event
-        });
+        .update({ memos: modifiedCardMemos });
     },
     // メモを編集
     editMemoValue(cardId, cardIndex, memoIndex, event) {
