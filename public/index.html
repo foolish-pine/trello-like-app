@@ -7,7 +7,12 @@
   <meta name="viewport" content="width=device-width,initial-scale=1.0">
   <link rel="icon" href="<%= BASE_URL %>favicon.ico">
   <title>My Memo Board</title>
-  <link href="https://fonts.googleapis.com/css2?family=Lobster&display=swap" rel="stylesheet">
+  <script>
+    // Web Fontが読み込まれているかを問わず、3秒後に強制的に画面表示を行う(低速環境対策)
+    setTimeout(function () {
+      document.getElementsByTagName("html")[0].classList.add("loading-delay");
+    }, 3000);
+  </script>
 </head>
 
 <body>
@@ -17,6 +22,24 @@
   </noscript>
   <div id="app"></div>
   <!-- built files will be auto injected -->
+  <script>
+    // Web Fontの非同期読み込み
+    window.WebFontConfig = {
+      google: { families: ['Lobster'] },
+      active: function () {
+        sessionStorage.fonts = true;
+      }
+    };
+
+    (function () {
+      var wf = document.createElement('script');
+      wf.src = 'https://ajax.googleapis.com/ajax/libs/webfont/1.6.26/webfont.js';
+      wf.type = 'text/javascript';
+      wf.async = 'true';
+      var s = document.getElementsByTagName('script')[0];
+      s.parentNode.insertBefore(wf, s);
+    })();
+  </script>
 </body>
 
 </html>
