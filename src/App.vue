@@ -1,16 +1,16 @@
 <template>
   <v-app>
     <header>
-      <v-app-bar app flat dark class="teal" height="80">
-        <v-toolbar-title v-if="uid" class="app-title">My Memo Board.</v-toolbar-title>
+      <v-app-bar  v-if="uid" app flat dark class="teal" height="80">
+        <v-toolbar-title class="app-title hidden-xs-only">My Memo Board.</v-toolbar-title>
 
         <v-spacer></v-spacer>
 
         <div v-if="uid" key="login" class="d-flex align-center">
-          <v-avatar size="40" class="mr-3 hidden-sm-and-down">
+          <v-avatar size="40" class="mr-3">
             <img :src="photoURL" />
           </v-avatar>
-          <div class="mr-5 hidden-sm-and-down">{{ displayName }}</div>
+          <div class="mr-5">{{ displayName }}</div>
           <v-btn @click="doLogout" outlined>ログアウト</v-btn>
         </div>
       </v-app-bar>
@@ -48,6 +48,13 @@ export default {
 </script>
 
 <style lang="scss">
+// Web Fontのちらつき対策
+html {
+  visibility: hidden;
+}
+html.wf-active, html.loading-delay {
+  visibility: visible;
+}
 .app-title {
   font-family: "Lobster", cursive;
   font-size: 2.5rem !important;
