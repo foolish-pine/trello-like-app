@@ -173,15 +173,12 @@ export default {
       );
       // その配列の最後にメモを追加する
       targetCardMemos.push({ value: "" });
-      // メモ追加後の配列をJSON形式でfirebaseに保存
-      const modifiedCardMemos = JSON.parse(
-        JSON.stringify(targetCardMemos, null, 2)
-      );
+      // メモ追加後の配列をfirebaseに保存
       firebase
         .firestore()
         .collection(`users/${this.uid}/cards`)
         .doc(cardId)
-        .update({ memos: modifiedCardMemos });
+        .update({ memos: targetCardMemos });
     },
     // メモを削除
     deleteMemo(cardId, cardIndex, memoIndex) {
@@ -192,15 +189,12 @@ export default {
       );
       // その配列から、削除ボタンが押されたメモを削除する
       targetCardMemos.splice(memoIndex, 1);
-      // メモ削除後の配列をJSON形式でfirebaseに保存
-      const modifiedCardMemos = JSON.parse(
-        JSON.stringify(targetCardMemos, null, 2)
-      );
+      // メモ削除後の配列をfirebaseに保存
       firebase
         .firestore()
         .collection(`users/${this.uid}/cards`)
         .doc(cardId)
-        .update({ memos: modifiedCardMemos });
+        .update({ memos: targetCardMemos });
     },
     // メモを編集
     editMemoValue(cardId, cardIndex, memoIndex, event) {
@@ -211,31 +205,24 @@ export default {
       );
       // 配列から編集したいメモを選択し、テキストエリアに入力した文字列をそのvalueに代入
       targetCardMemos[memoIndex].value = event;
-      // メモ編集後の配列をJSON形式でfirebaseに保存
-      const modifiedCardMemos = JSON.parse(
-        JSON.stringify(targetCardMemos, null, 2)
-      );
+      // メモ編集後の配列をfirebaseに保存
       firebase
         .firestore()
         .collection(`users/${this.uid}/cards`)
         .doc(cardId)
-        .update({ memos: modifiedCardMemos });
+        .update({ memos: targetCardMemos });
     },
     // メモ移動後、移動元、移動先のメモ一覧をfirebaseに保存
     updateMemoOrder(event) {
       // メモ移動後、移動元のカードのメモ一覧をfirebaseに保存
-      const fromCardMemos = JSON.parse(
-        JSON.stringify(this.cards[event.from.id].memos, null, 2)
-      );
+        const fromCardMemos = this.cards[event.from.id].memos
       firebase
         .firestore()
         .collection(`users/${this.uid}/cards`)
         .doc(this.cards[event.from.id].id)
         .update({ memos: fromCardMemos });
       // メモ移動後、移動先のカードのメモ一覧をfirebaseに保存
-      const toCardMemos = JSON.parse(
-        JSON.stringify(this.cards[event.to.id].memos, null, 2)
-      );
+      const toCardMemos = this.cards[event.to.id].memos
       firebase
         .firestore()
         .collection(`users/${this.uid}/cards`)
