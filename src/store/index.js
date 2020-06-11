@@ -8,13 +8,13 @@ export default new Vuex.Store({
   state: {
     themeColor: "#FFFFFFFF", // テーマカラー
     colors: {
-      red: "#F4433688",
-      purple: "#9C27B088",
-      blue: "#2196F388",
-      teal: "#00968888",
-      green: "#4CAF5088",
-      orange: "#FF980088",
-      "blue-grey": "#607D8B88",
+      red: "#F4433654",
+      purple: "#9C27B054",
+      blue: "#2196F366",
+      teal: "#00968866",
+      green: "#4CAF5066",
+      orange: "#FF980054",
+      "blue-grey": "#607D8B66",
     }, // デフォルトのテーマカラーセット
     user: {}, // ユーザー情報
     cards: [], // ユーザーのカード
