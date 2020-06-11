@@ -5,10 +5,11 @@
 <br>
 <br>
 
-[こちら(https://draggable-memo-app-foolish-pine.netlify.app/)]からお使いいただけます。
+[こちら](https://draggable-memo-app-foolish-pine.netlify.app/)からお使いいただけます。
 <br>
 <br>
 「匿名でログイン」をクリックすることで、Googleアカウントの認証なしで利用することもできます。その場合、カードやメモはブラウザを閉じたりリロードしたりしても保持されますが、ログアウトすると失われます。
+<br>
 <br>
 
 ## ポイント
