@@ -42,14 +42,48 @@ export default new Vuex.Store({
       const provider = new firebase.auth.GoogleAuthProvider();
       firebase.auth().signInWithPopup(provider);
     },
+    doAnonymousLogin() {
+      firebase
+        .auth()
+        .signInAnonymously()
+        .catch((error) => {
+          console.log(alert(error.message));
+        });
+    },
     // ログアウト処理
     doLogout({ commit }) {
       firebase.auth().signOut();
       commit("doLogout");
     },
     // ユーザー情報のセット
-    setLoginUser({ commit }, user) {
+    setLoginUser({ getters, dispatch, commit }, user) {
       commit("setLoginUser", user);
+      const users = [];
+      firebase
+        .firestore()
+        .collection("users")
+        .get()
+        .then((querySnapshot) => {
+          querySnapshot.forEach((doc) => {
+            users.push(doc.id);
+          });
+        })
+        .then(() => {
+          if (!users.includes(getters.uid)) {
+            firebase
+              .firestore()
+              .collection("users")
+              .doc(getters.uid)
+              .set({
+                themeColor: "#00968866",
+              })
+              .then(() => {
+                commit("setThemeColor", "#00968866");
+              });
+          } else {
+            dispatch("fetchThemeColor");
+          }
+        });
     },
     setMemoList({ commit }, val) {
       commit("setMemoList", val);
@@ -87,7 +121,7 @@ export default new Vuex.Store({
           commit("setThemeColor", doc.data().themeColor);
         });
     },
-    // テーマカラーを設定する
+    // 設定したテーマカラーをFirebaseに保存する
     setThemeColor({ getters, commit }, color) {
       commit("setThemeColor", color);
       firebase
@@ -102,6 +136,5 @@ export default new Vuex.Store({
     displayName: (state) => (state.user ? state.user.displayName : ""),
     photoURL: (state) => (state.user ? state.user.photoURL : ""),
     cards: (state) => (state.cards ? state.cards : ""),
-    // themeColor: (state) => (state.themeColor ? state.themeColor : ""),
   },
 });
