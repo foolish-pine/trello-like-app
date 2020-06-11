@@ -1,5 +1,5 @@
 <template>
-  <v-content class="teal">
+  <v-content :style="themeColor">
     <v-container class="d-flex">
       <!-- カードを存在するだけ並べる -->
       <draggable
@@ -99,6 +99,7 @@
 <script>
 import draggable from "vuedraggable";
 import { mapGetters } from "vuex";
+import store from "../store";
 import firebase from "firebase";
 
 export default {
@@ -108,7 +109,10 @@ export default {
   },
   data: () => ({}),
   computed: {
-    ...mapGetters(["uid", "cards"])
+    ...mapGetters(["uid", "cards"]),
+    themeColor() {
+      return `background-color: ${store.state.themeColor} !important`;
+    }
   },
   methods: {
     // カードを追加
@@ -215,14 +219,14 @@ export default {
     // メモ移動後、移動元、移動先のメモ一覧をfirebaseに保存
     updateMemoOrder(event) {
       // メモ移動後、移動元のカードのメモ一覧をfirebaseに保存
-        const fromCardMemos = this.cards[event.from.id].memos
+      const fromCardMemos = this.cards[event.from.id].memos;
       firebase
         .firestore()
         .collection(`users/${this.uid}/cards`)
         .doc(this.cards[event.from.id].id)
         .update({ memos: fromCardMemos });
       // メモ移動後、移動先のカードのメモ一覧をfirebaseに保存
-      const toCardMemos = this.cards[event.to.id].memos
+      const toCardMemos = this.cards[event.to.id].memos;
       firebase
         .firestore()
         .collection(`users/${this.uid}/cards`)
@@ -281,4 +285,7 @@ textarea {
   z-index: 10;
   background-color: rgba(255, 255, 255, 0.8);
 }
+// .themeColor {
+//   background-color: #334433 !important;
+// }
 </style>
