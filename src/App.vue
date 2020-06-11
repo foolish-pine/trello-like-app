@@ -6,7 +6,7 @@
 
         <v-spacer></v-spacer>
 
-        <div v-if="uid" key="login" class="d-flex align-center">
+        <div v-if="uid" class="d-flex align-center">
           <v-menu transition="slide-y-transition">
             <template v-slot:activator="{ on }">
               <v-icon class="mr-5" v-on="on">mdi-dots-horizontal</v-icon>
@@ -30,10 +30,11 @@
             </v-list>
           </v-menu>
 
-          <v-avatar size="40" class="mr-3">
+          <v-avatar v-if="photoURL" size="40" class="mr-3">
             <img :src="photoURL" />
           </v-avatar>
-          <div class="mr-5">{{ displayName }}</div>
+          <div v-if="displayName" class="mr-5">{{ displayName }}</div>
+          <div v-if="$store.state.user.isAnonymous" class="mr-8">ゲストさん</div>
           <v-btn @click="doLogout" outlined>ログアウト</v-btn>
         </div>
       </v-app-bar>
@@ -55,9 +56,8 @@ export default {
         // ログイン後ユーザー情報とユーザーのカードをセットする
         this.setLoginUser(user);
         this.fetchCards();
-        this.fetchThemeColor();
       } else {
-        this.doLogout(user);
+        this.doLogout();
         this.$router.push("/", () => {});
       }
     });
@@ -69,7 +69,6 @@ export default {
       "doLogout",
       "fetchCards",
       "setThemeColor",
-      "fetchThemeColor"
     ]),
     setThemeColorMethod(color) {
       this.setThemeColor(color);

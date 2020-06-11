@@ -2,7 +2,10 @@
   <v-content class="teal">
     <v-container text-center justify-center>
       <h1 class="app-title mb-5">My Memo Board.</h1>
-      <div v-if="!uid" key="logout" class="align-center">
+      <div v-if="!uid" class="align-center mb-5">
+        <v-btn @click="doAnonymousLogin" large color="white" class="black--text">匿名でログイン</v-btn>
+      </div>
+      <div v-if="!uid" class="align-center">
         <v-btn @click="doLogin" large color="white" class="black--text">Googleアカウントでログイン</v-btn>
       </div>
     </v-container>
@@ -26,7 +29,7 @@ export default {
     });
   },
   methods: {
-    ...mapActions(["doLogin", "setLoginUser"])
+    ...mapActions(["doLogin", "doAnonymousLogin" ,"setLoginUser"])
   },
   computed: {
     ...mapGetters(["uid"])
