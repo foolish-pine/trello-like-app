@@ -1,12 +1,35 @@
 <template>
   <v-app>
     <header>
-      <v-app-bar  v-if="uid" app flat dark class="teal" height="80">
+      <v-app-bar v-if="uid" app flat dark :color="$store.state.themeColor" height="80">
         <v-toolbar-title class="app-title hidden-xs-only">My Memo Board.</v-toolbar-title>
 
         <v-spacer></v-spacer>
 
         <div v-if="uid" key="login" class="d-flex align-center">
+          <v-menu transition="slide-y-transition">
+            <template v-slot:activator="{ on }">
+              <v-icon class="mr-5" v-on="on">mdi-dots-horizontal</v-icon>
+            </template>
+            <v-list>
+              <v-list-item>
+                <v-menu :close-on-content-click="false" transition="slide-y-transition">
+                  <template v-slot:activator="{ on }">
+                    <v-icon class="mdi-36px" v-on="on">mdi-eyedropper-plus</v-icon>
+                  </template>
+                  <v-color-picker v-model="pickedColor"></v-color-picker>
+                </v-menu>
+              </v-list-item>
+              <v-list-item v-for="color in $store.state.colors" :key="color.index">
+                <v-icon
+                  :color="color"
+                  class="mdi-36px"
+                  @click="setThemeColorMethod(color)"
+                >mdi-circle</v-icon>
+              </v-list-item>
+            </v-list>
+          </v-menu>
+
           <v-avatar size="40" class="mr-3">
             <img :src="photoURL" />
           </v-avatar>
@@ -20,8 +43,8 @@
 </template>
 
 <script>
-import { mapActions } from "vuex";
-import { mapGetters } from "vuex";
+import { mapActions, mapGetters } from "vuex";
+import store from "./store";
 import firebase from "firebase";
 
 export default {
@@ -32,6 +55,7 @@ export default {
         // ログイン後ユーザー情報とユーザーのカードをセットする
         this.setLoginUser(user);
         this.fetchCards();
+        this.fetchThemeColor();
       } else {
         this.doLogout(user);
         this.$router.push("/", () => {});
@@ -39,10 +63,28 @@ export default {
     });
   },
   methods: {
-    ...mapActions(["setLoginUser", "doLogin", "doLogout", "fetchCards"])
+    ...mapActions([
+      "setLoginUser",
+      "doLogin",
+      "doLogout",
+      "fetchCards",
+      "setThemeColor",
+      "fetchThemeColor"
+    ]),
+    setThemeColorMethod(color) {
+      this.setThemeColor(color);
+    }
   },
   computed: {
-    ...mapGetters(["uid", "displayName", "photoURL"])
+    ...mapGetters(["uid", "displayName", "photoURL"]),
+    pickedColor: {
+      get() {
+        return store.state.themeColor;
+      },
+      set(color) {
+        this.setThemeColor(color);
+      }
+    }
   }
 };
 </script>
@@ -52,7 +94,8 @@ export default {
 html {
   visibility: hidden;
 }
-html.wf-active, html.loading-delay {
+html.wf-active,
+html.loading-delay {
   visibility: visible;
 }
 .app-title {
