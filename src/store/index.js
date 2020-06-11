@@ -98,17 +98,20 @@ export default new Vuex.Store({
         .firestore()
         .collection(`users/${getters.uid}/cards`)
         .orderBy("index", "asc")
-        .onSnapshot((snapshot) => {
-          dispatch("clearCards");
-          snapshot.forEach((doc) => {
-            commit("fetchCards", {
-              id: doc.id,
-              index: doc.get("index"),
-              cardName: doc.get("cardName"),
-              memos: doc.get("memos"),
+        .onSnapshot(
+          (snapshot) => {
+            dispatch("clearCards");
+            snapshot.forEach((doc) => {
+              commit("fetchCards", {
+                id: doc.id,
+                index: doc.get("index"),
+                cardName: doc.get("cardName"),
+                memos: doc.get("memos"),
+              });
             });
-          });
-        });
+          },
+          () => {}
+        );
     },
     // 設定したテーマカラーを取得する
     fetchThemeColor({ getters, commit }) {
