@@ -13,8 +13,7 @@
 </template>
 
 <script>
-import { mapActions } from "vuex";
-import { mapGetters } from "vuex";
+import { mapActions, mapGetters } from "vuex";
 import firebase from "firebase";
 
 export default {
@@ -23,7 +22,6 @@ export default {
   created() {
     firebase.auth().onAuthStateChanged(user => {
       if (user) {
-        // ログイン後ユーザー情報をセットする
         this.$router.push("/memo", () => {});
       }
     });
