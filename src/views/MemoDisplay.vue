@@ -24,7 +24,7 @@
           </v-system-bar>
           <v-textarea
             :value="card.cardName"
-            @change="editCardName(card.id, $event)"
+            @change="editCardName({cardId: card.id, value: $event})"
             solo
             auto-grow
             flat
@@ -47,7 +47,7 @@
                   <v-card height="100%" class="d-flex mb-3">
                     <v-textarea
                       :value="memo.value"
-                      @change="editMemoValue(card.id, cardIndex, memoIndex, $event)"
+                      @change="editMemoValue({cardId: card.id, cardIndex: cardIndex, memoIndex: memoIndex, value: $event})"
                       solo
                       auto-grow
                       flat
@@ -56,7 +56,7 @@
                     ></v-textarea>
                     <v-icon
                       v-show="hover? true : false"
-                      @click="deleteMemo(card.id, cardIndex, memoIndex)"
+                      @click="deleteMemo({cardId: card.id, cardIndex: cardIndex, memoIndex: memoIndex})"
                       class="pr-1 memo-close-icon"
                     >mdi-close</v-icon>
                   </v-card>
@@ -69,7 +69,7 @@
                 flat
                 class="add-button"
                 :class="{ 'on-hover': hover }"
-                @click="addNewMemo(card.id, cardIndex)"
+                @click="addNewMemo({cardId: card.id, cardIndex: cardIndex})"
               >
                 <v-card-title class="px-3 py-2 body-1">
                   <v-icon class="mr-2">mdi-plus</v-icon>Add New Memo
@@ -85,7 +85,7 @@
           height="100%"
           class="mr-5 px-3 py-3 card add-button"
           :class="{ 'on-hover': hover }"
-          @click="addNewCard()"
+          @click="addNewCard"
         >
           <v-card-title class="px-3 py-0 title">
             <v-icon class="mr-2">mdi-plus</v-icon>Add New Card
@@ -97,10 +97,9 @@
 </template>
 
 <script>
-import { mapGetters } from "vuex";
+import { mapActions, mapGetters } from "vuex";
 import draggable from "vuedraggable";
 import store from "../store";
-import firebase from "firebase";
 
 export default {
   name: "MemoDisplay",
@@ -115,112 +114,16 @@ export default {
     }
   },
   methods: {
-    // カードを追加
-    addNewCard() {
-      // 新しいカードのindex = 既存のカードのindexの最大値 + 1
-      let cardIndexMax = 0;
-      for (let i = 0; i < this.cards.length; i++) {
-        if (this.cards[i].index > cardIndexMax)
-          cardIndexMax = this.cards[i].index;
-      }
-      const newCardIndex = Number(cardIndexMax) + 1;
-      firebase
-        .firestore()
-        .collection(`users/${this.uid}/cards`)
-        .doc()
-        .set({ index: newCardIndex, cardName: "", memos: [] });
-    },
-    // カードを削除
-    deleteCard(cardId) {
-      firebase
-        .firestore()
-        .collection(`users/${this.uid}/cards`)
-        .onSnapshot(snapshot => {
-          snapshot.forEach(doc => {
-            if (doc.id === cardId) {
-              firebase
-                .firestore()
-                .collection(`users/${this.uid}/cards`)
-                .doc(doc.id)
-                .delete();
-            }
-          });
-        });
-    },
-    // カード名を編集
-    editCardName(cardId, value) {
-      firebase
-        .firestore()
-        .collection(`users/${this.uid}/cards`)
-        .doc(cardId)
-        .update({
-          cardName: value
-        });
-    },
-    // カード入れ替え時にカードのindexを更新する
-    updateCardOrder(event) {
-      for (let i = 0; i < event.from.children.length; i++) {
-        firebase
-          .firestore()
-          .collection(`users/${this.uid}/cards`)
-          .doc(event.from.children[i].id)
-          .update({ index: i });
-      }
-    },
-    // メモを追加
-    addNewMemo(cardId, cardIndex) {
-      // カードのすべてのメモを取得し、配列に入れる
-      const targetCardMemos = Array.from(this.cards[cardIndex].memos);
-      // その配列の最後にメモを追加する
-      targetCardMemos.push({ value: "" });
-      // メモ追加後の配列をfirebaseに保存
-      firebase
-        .firestore()
-        .collection(`users/${this.uid}/cards`)
-        .doc(cardId)
-        .update({ memos: targetCardMemos });
-    },
-    // メモを削除
-    deleteMemo(cardId, cardIndex, memoIndex) {
-      const targetCardMemos = Array.from(this.cards[cardIndex].memos);
-      // その配列から、削除ボタンが押されたメモを削除する
-      targetCardMemos.splice(memoIndex, 1);
-      // メモ削除後の配列をfirebaseに保存
-      firebase
-        .firestore()
-        .collection(`users/${this.uid}/cards`)
-        .doc(cardId)
-        .update({ memos: targetCardMemos });
-    },
-    // メモを編集
-    editMemoValue(cardId, cardIndex, memoIndex, value) {
-      const targetCardMemos = Array.from(this.cards[cardIndex].memos);
-      // 配列から編集したいメモを選択し、テキストエリアに入力した文字列をそのvalueに代入
-      targetCardMemos[memoIndex].value = value;
-      // メモ編集後の配列をfirebaseに保存
-      firebase
-        .firestore()
-        .collection(`users/${this.uid}/cards`)
-        .doc(cardId)
-        .update({ memos: targetCardMemos });
-    },
-    // メモ移動後、移動元、移動先のメモ一覧をfirebaseに保存
-    updateMemoOrder(event) {
-      // 移動元のカードのメモ一覧をfirebaseに保存
-      const fromCardMemos = this.cards[event.from.id].memos;
-      firebase
-        .firestore()
-        .collection(`users/${this.uid}/cards`)
-        .doc(this.cards[event.from.id].id)
-        .update({ memos: fromCardMemos });
-      // 移動先のカードのメモ一覧をfirebaseに保存
-      const toCardMemos = this.cards[event.to.id].memos;
-      firebase
-        .firestore()
-        .collection(`users/${this.uid}/cards`)
-        .doc(this.cards[event.to.id].id)
-        .update({ memos: toCardMemos });
-    }
+    ...mapActions([
+      "addNewCard",
+      "deleteCard",
+      "editCardName",
+      "updateCardOrder",
+      "addNewMemo",
+      "deleteMemo",
+      "editMemoValue",
+      "updateMemoOrder"
+    ])
   }
 };
 </script>

@@ -135,6 +135,112 @@ export default new Vuex.Store({
         .doc(`${getters.uid}`)
         .update({ themeColor: color });
     },
+    // カードを追加
+    addNewCard({ getters, state }) {
+      // 新しいカードのindex = 既存のカードのindexの最大値 + 1
+      let cardIndexMax = 0;
+      for (let i = 0; i < state.cards.length; i++) {
+        if (state.cards[i].index > cardIndexMax)
+          cardIndexMax = state.cards[i].index;
+      }
+      const newCardIndex = Number(cardIndexMax) + 1;
+      firebase
+        .firestore()
+        .collection(`users/${getters.uid}/cards`)
+        .doc()
+        .set({ index: newCardIndex, cardName: "", memos: [] });
+    },
+    // カードを削除
+    deleteCard({ getters }, cardId) {
+      firebase
+        .firestore()
+        .collection(`users/${getters.uid}/cards`)
+        .onSnapshot((snapshot) => {
+          snapshot.forEach((doc) => {
+            if (doc.id === cardId) {
+              firebase
+                .firestore()
+                .collection(`users/${getters.uid}/cards`)
+                .doc(doc.id)
+                .delete();
+            }
+          });
+        });
+    },
+    // カード名を編集
+    editCardName({ getters }, { cardId, value }) {
+      firebase
+        .firestore()
+        .collection(`users/${getters.uid}/cards`)
+        .doc(cardId)
+        .update({
+          cardName: value,
+        });
+    },
+    // カード入れ替え時にカードのindexを更新する
+    updateCardOrder({ getters }, event) {
+      for (let i = 0; i < event.from.children.length; i++) {
+        firebase
+          .firestore()
+          .collection(`users/${getters.uid}/cards`)
+          .doc(event.from.children[i].id)
+          .update({ index: i });
+      }
+    },
+    // メモを追加
+    addNewMemo({ getters, state }, { cardId, cardIndex }) {
+      // カードのすべてのメモを取得し、配列に入れる
+      const targetCardMemos = Array.from(state.cards[cardIndex].memos);
+      // その配列の最後にメモを追加する
+      targetCardMemos.push({ value: "" });
+      // メモ追加後の配列をfirebaseに保存
+      firebase
+        .firestore()
+        .collection(`users/${getters.uid}/cards`)
+        .doc(cardId)
+        .update({ memos: targetCardMemos });
+    },
+    // メモを削除
+    deleteMemo({ getters, state }, { cardId, cardIndex, memoIndex }) {
+      const targetCardMemos = Array.from(state.cards[cardIndex].memos);
+      // その配列から、削除ボタンが押されたメモを削除する
+      targetCardMemos.splice(memoIndex, 1);
+      // メモ削除後の配列をfirebaseに保存
+      firebase
+        .firestore()
+        .collection(`users/${getters.uid}/cards`)
+        .doc(cardId)
+        .update({ memos: targetCardMemos });
+    },
+    // メモを編集
+    editMemoValue({ getters, state }, { cardId, cardIndex, memoIndex, value }) {
+      const targetCardMemos = Array.from(state.cards[cardIndex].memos);
+      // 配列から編集したいメモを選択し、テキストエリアに入力した文字列をそのvalueに代入
+      targetCardMemos[memoIndex].value = value;
+      // メモ編集後の配列をfirebaseに保存
+      firebase
+        .firestore()
+        .collection(`users/${getters.uid}/cards`)
+        .doc(cardId)
+        .update({ memos: targetCardMemos });
+    },
+    // メモ移動後、移動元、移動先のメモ一覧をfirebaseに保存
+    updateMemoOrder({ getters, state }, event) {
+      // 移動元のカードのメモ一覧をfirebaseに保存
+      const fromCardMemos = state.cards[event.from.id].memos;
+      firebase
+        .firestore()
+        .collection(`users/${getters.uid}/cards`)
+        .doc(state.cards[event.from.id].id)
+        .update({ memos: fromCardMemos });
+      // 移動先のカードのメモ一覧をfirebaseに保存
+      const toCardMemos = state.cards[event.to.id].memos;
+      firebase
+        .firestore()
+        .collection(`users/${getters.uid}/cards`)
+        .doc(state.cards[event.to.id].id)
+        .update({ memos: toCardMemos });
+    },
   },
   getters: {
     uid: (state) => (state.user ? state.user.uid : ""),
