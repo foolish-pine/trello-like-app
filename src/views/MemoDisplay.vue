@@ -97,8 +97,8 @@
 </template>
 
 <script>
-import draggable from "vuedraggable";
 import { mapGetters } from "vuex";
+import draggable from "vuedraggable";
 import store from "../store";
 import firebase from "firebase";
 
@@ -120,11 +120,10 @@ export default {
       // 新しいカードのindex = 既存のカードのindexの最大値 + 1
       let cardIndexMax = 0;
       for (let i = 0; i < this.cards.length; i++) {
-        if (this.cards[i].index > cardIndexMax) {
+        if (this.cards[i].index > cardIndexMax)
           cardIndexMax = this.cards[i].index;
-        }
       }
-      const newCardIndex = parseInt(cardIndexMax) + 1;
+      const newCardIndex = Number(cardIndexMax) + 1;
       firebase
         .firestore()
         .collection(`users/${this.uid}/cards`)
@@ -149,13 +148,13 @@ export default {
         });
     },
     // カード名を編集
-    editCardName(cardId, event) {
+    editCardName(cardId, value) {
       firebase
         .firestore()
         .collection(`users/${this.uid}/cards`)
         .doc(cardId)
         .update({
-          cardName: event
+          cardName: value
         });
     },
     // カード入れ替え時にカードのindexを更新する
@@ -171,10 +170,7 @@ export default {
     // メモを追加
     addNewMemo(cardId, cardIndex) {
       // カードのすべてのメモを取得し、配列に入れる
-      const targetCardMemos = this.cards[cardIndex].memos.slice(
-        0,
-        this.cards[cardIndex].memos.length
-      );
+      const targetCardMemos = this.cards[cardIndex].memos;
       // その配列の最後にメモを追加する
       targetCardMemos.push({ value: "" });
       // メモ追加後の配列をfirebaseに保存
@@ -186,11 +182,7 @@ export default {
     },
     // メモを削除
     deleteMemo(cardId, cardIndex, memoIndex) {
-      // カードのすべてのメモを取得し、配列に入れる
-      const targetCardMemos = this.cards[cardIndex].memos.slice(
-        0,
-        this.cards[cardIndex].memos.length
-      );
+      const targetCardMemos = this.cards[cardIndex].memos;
       // その配列から、削除ボタンが押されたメモを削除する
       targetCardMemos.splice(memoIndex, 1);
       // メモ削除後の配列をfirebaseに保存
@@ -201,14 +193,10 @@ export default {
         .update({ memos: targetCardMemos });
     },
     // メモを編集
-    editMemoValue(cardId, cardIndex, memoIndex, event) {
-      // カードのすべてのメモを取得し、配列に入れる
-      const targetCardMemos = this.cards[cardIndex].memos.slice(
-        0,
-        this.cards[cardIndex].memos.length
-      );
+    editMemoValue(cardId, cardIndex, memoIndex, value) {
+      const targetCardMemos = this.cards[cardIndex].memos;
       // 配列から編集したいメモを選択し、テキストエリアに入力した文字列をそのvalueに代入
-      targetCardMemos[memoIndex].value = event;
+      targetCardMemos[memoIndex].value = value;
       // メモ編集後の配列をfirebaseに保存
       firebase
         .firestore()
@@ -218,14 +206,14 @@ export default {
     },
     // メモ移動後、移動元、移動先のメモ一覧をfirebaseに保存
     updateMemoOrder(event) {
-      // メモ移動後、移動元のカードのメモ一覧をfirebaseに保存
+      // 移動元のカードのメモ一覧をfirebaseに保存
       const fromCardMemos = this.cards[event.from.id].memos;
       firebase
         .firestore()
         .collection(`users/${this.uid}/cards`)
         .doc(this.cards[event.from.id].id)
         .update({ memos: fromCardMemos });
-      // メモ移動後、移動先のカードのメモ一覧をfirebaseに保存
+      // 移動先のカードのメモ一覧をfirebaseに保存
       const toCardMemos = this.cards[event.to.id].memos;
       firebase
         .firestore()
