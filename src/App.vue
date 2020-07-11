@@ -24,7 +24,7 @@
                 <v-icon
                   :color="color"
                   class="mdi-36px"
-                  @click="setThemeColorMethod(color)"
+                  @click="setThemeColor(color)"
                 >mdi-circle</v-icon>
               </v-list-item>
             </v-list>
@@ -70,9 +70,6 @@ export default {
       "fetchCards",
       "setThemeColor",
     ]),
-    setThemeColorMethod(color) {
-      this.setThemeColor(color);
-    }
   },
   computed: {
     ...mapGetters(["uid", "displayName", "photoURL"]),

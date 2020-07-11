@@ -24,7 +24,9 @@ export default new Vuex.Store({
       state.user = user;
     },
     doLogout(state) {
+      state.themeColor = "#FFFFFFFF";
       state.user = {};
+      state.cards = [];
     },
     clearCards(state) {
       state.cards = [];
@@ -42,6 +44,7 @@ export default new Vuex.Store({
       const provider = new firebase.auth.GoogleAuthProvider();
       firebase.auth().signInWithPopup(provider);
     },
+    // 匿名ログイン
     doAnonymousLogin() {
       firebase
         .auth()
@@ -69,6 +72,7 @@ export default new Vuex.Store({
           });
         })
         .then(() => {
+          // 初めて利用するユーザーならusersにドキュメントを追加し、初期テーマカラーをセットする
           if (!users.includes(getters.uid)) {
             firebase
               .firestore()
@@ -78,15 +82,13 @@ export default new Vuex.Store({
                 themeColor: "#00968866",
               })
               .then(() => {
-                commit("setThemeColor", "#00968866");
+                dispatch("fetchThemeColor");
               });
           } else {
+            // 既存ユーザーならテーマカラーを取得する
             dispatch("fetchThemeColor");
           }
         });
-    },
-    setMemoList({ commit }, val) {
-      commit("setMemoList", val);
     },
     // stateのcardsをクリアする
     clearCards({ commit }) {
@@ -138,6 +140,6 @@ export default new Vuex.Store({
     uid: (state) => (state.user ? state.user.uid : ""),
     displayName: (state) => (state.user ? state.user.displayName : ""),
     photoURL: (state) => (state.user ? state.user.photoURL : ""),
-    cards: (state) => (state.cards ? state.cards : ""),
+    cards: (state) => state.cards,
   },
 });

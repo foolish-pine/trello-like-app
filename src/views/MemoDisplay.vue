@@ -170,7 +170,7 @@ export default {
     // メモを追加
     addNewMemo(cardId, cardIndex) {
       // カードのすべてのメモを取得し、配列に入れる
-      const targetCardMemos = this.cards[cardIndex].memos;
+      const targetCardMemos = Array.from(this.cards[cardIndex].memos);
       // その配列の最後にメモを追加する
       targetCardMemos.push({ value: "" });
       // メモ追加後の配列をfirebaseに保存
@@ -182,7 +182,7 @@ export default {
     },
     // メモを削除
     deleteMemo(cardId, cardIndex, memoIndex) {
-      const targetCardMemos = this.cards[cardIndex].memos;
+      const targetCardMemos = Array.from(this.cards[cardIndex].memos);
       // その配列から、削除ボタンが押されたメモを削除する
       targetCardMemos.splice(memoIndex, 1);
       // メモ削除後の配列をfirebaseに保存
@@ -194,7 +194,7 @@ export default {
     },
     // メモを編集
     editMemoValue(cardId, cardIndex, memoIndex, value) {
-      const targetCardMemos = this.cards[cardIndex].memos;
+      const targetCardMemos = Array.from(this.cards[cardIndex].memos);
       // 配列から編集したいメモを選択し、テキストエリアに入力した文字列をそのvalueに代入
       targetCardMemos[memoIndex].value = value;
       // メモ編集後の配列をfirebaseに保存
