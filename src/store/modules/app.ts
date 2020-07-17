@@ -95,15 +95,11 @@ class AppModule extends VuexModule {
     firebase
       .firestore()
       .collection("users")
+      .doc(this.uid)
       .get()
-      .then((querySnapshot) => {
-        querySnapshot.forEach((doc) => {
-          users.push(doc.id);
-        });
-      })
-      .then(() => {
+      .then((doc) => {
         // 初めて利用するユーザーならusersにドキュメントを追加し、初期テーマカラーをセットする
-        if (!users.includes(this.uid)) {
+        if (!doc.exists) {
           firebase
             .firestore()
             .collection("users")
@@ -148,7 +144,7 @@ class AppModule extends VuexModule {
     firebase
       .firestore()
       .collection("users")
-      .doc(`${this.uid}`)
+      .doc(this.uid)
       .get()
       .then((doc) => {
         this.setThemeColor(doc.data()!.themeColor);
@@ -321,10 +317,6 @@ class AppModule extends VuexModule {
       .doc(this.cards[event.to.id].id)
       .update({ memos: toCardMemos });
   }
-
-  // get uid () {return this.user ? this.user.uid : ""}
-  // displayName: (state) => (state.user ? state.user.displayName : "")
-  // photoURL: (state) => (state.user ? state.user.photoURL : "")
 }
 
 export default getModule(AppModule);

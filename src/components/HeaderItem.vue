@@ -45,15 +45,15 @@ export default class HeaderItem extends Vue {
   }
 
   get uid(): string {
-    return AppModule.user ? AppModule.user.uid : "";
-  }
-
-  get photoURL(): string | null {
-    return AppModule.photoURL;
+    return AppModule.uid;
   }
 
   get displayName(): string | null {
     return AppModule.displayName;
+  }
+
+  get photoURL(): string | null {
+    return AppModule.photoURL;
   }
 
   get colors(): {

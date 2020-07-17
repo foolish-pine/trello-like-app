@@ -1,5 +1,5 @@
 <template>
-  <v-content>
+  <v-content style="height: 100%">
     <v-container class="d-flex">
       <!-- カードを存在するだけ並べる -->
       <draggable

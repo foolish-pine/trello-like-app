@@ -20,7 +20,7 @@ import AppModule from "../store/modules/app";
 @Component
 export default class Home extends Vue {
   get uid(): string {
-    return AppModule.user ? AppModule.user.uid : "";
+    return AppModule.uid;
   }
 
   doLogin() {
