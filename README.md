@@ -31,7 +31,7 @@ JavaScriptからTypeScriptに改修しました。TS + Vuexのベストな書き
 <br>
 
 ## 制作に使用した言語・ツール
-Vue.js / Firebase / Vuetify
+TypeScript / Vue.js / Firebase / Vuetify
 <br>
 <br>
 
