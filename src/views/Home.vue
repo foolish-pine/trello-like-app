@@ -12,39 +12,38 @@
   </v-content>
 </template>
 
-<script>
-import { mapActions, mapGetters } from "vuex";
-import firebase from "firebase";
+<script lang="ts">
+import { Component, Vue } from "vue-property-decorator";
+// import firebase from "firebase";
+import AppModule from "../store/modules/app";
 
-export default {
-  name: "Home",
-  components: {},
-  created() {
-    firebase.auth().onAuthStateChanged(user => {
-      if (user) {
-        this.$router.push("/memo", () => {});
-      }
-    });
-  },
-  methods: {
-    ...mapActions(["doLogin", "doAnonymousLogin" ,"setLoginUser"])
-  },
-  computed: {
-    ...mapGetters(["uid"])
+@Component
+export default class Home extends Vue {
+  get uid(): string {
+    return AppModule.user ? AppModule.user.uid : "";
   }
-};
+
+  doLogin() {
+    AppModule.doLoginAction();
+  }
+
+  doAnonymousLogin() {
+    AppModule.doAnonymousLoginAction();
+  }
+}
 </script>
 
 <style lang="scss" scoped>
-h1 {
-  font-size: 4rem !important;
-  text-align: center;
-  color: #fff;
-}
 .fv {
   width: 100%;
   max-width: 100vw;
   margin: 0;
   padding: 0;
+}
+.app-title {
+  font-family: "Lobster", cursive;
+  font-size: 4rem !important;
+  text-align: center;
+  color: #fff;
 }
 </style>
