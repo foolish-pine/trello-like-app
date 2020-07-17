@@ -83,7 +83,18 @@ class AppModule extends VuexModule {
   // ログアウト処理
   @Action
   doLogoutAction() {
-    firebase.auth().signOut();
+    if (this.user?.isAnonymous) {
+      firebase
+        .firestore()
+        .collection("users")
+        .doc(this.uid)
+        .delete()
+        .then(() => {
+          firebase.auth().signOut();
+        });
+    } else {
+      firebase.auth().signOut();
+    }
     this.doLogout();
   }
 
@@ -91,7 +102,6 @@ class AppModule extends VuexModule {
   @Action
   setLoginUserAction(user: firebase.User) {
     this.setLoginUser(user);
-    const users: string[] = [];
     firebase
       .firestore()
       .collection("users")
@@ -120,12 +130,12 @@ class AppModule extends VuexModule {
   // ユーザーのカードを取得
   @Action
   fetchCardsAction() {
-    if (this.user !== null)
-      firebase
-        .firestore()
-        .collection(`users/${this.user.uid}/cards`)
-        .orderBy("index", "asc")
-        .onSnapshot((snapshot) => {
+    firebase
+      .firestore()
+      .collection(`users/${this.user?.uid}/cards`)
+      .orderBy("index", "asc")
+      .onSnapshot(
+        (snapshot) => {
           this.clearCards();
           snapshot.forEach((doc) => {
             this.fetchCards({
@@ -135,7 +145,9 @@ class AppModule extends VuexModule {
               memos: doc.get("memos"),
             });
           });
-        });
+        },
+        () => {}
+      );
   }
 
   // 設定したテーマカラーを取得する
@@ -185,17 +197,20 @@ class AppModule extends VuexModule {
     firebase
       .firestore()
       .collection(`users/${this.uid}/cards`)
-      .onSnapshot((snapshot) => {
-        snapshot.forEach((doc) => {
-          if (doc.id === cardId) {
-            firebase
-              .firestore()
-              .collection(`users/${this.uid}/cards`)
-              .doc(doc.id)
-              .delete();
-          }
-        });
-      });
+      .onSnapshot(
+        (snapshot) => {
+          snapshot.forEach((doc) => {
+            if (doc.id === cardId) {
+              firebase
+                .firestore()
+                .collection(`users/${this.uid}/cards`)
+                .doc(doc.id)
+                .delete();
+            }
+          });
+        },
+        () => {}
+      );
   }
 
   // カード名を編集
