@@ -1,20 +1,20 @@
 import Vue from "vue";
-import VueRouter from "vue-router";
+import VueRouter, { RouteConfig } from "vue-router";
 import Home from "../views/Home.vue";
-import MemoDisplay from "../views/MemoDisplay.vue";
+import Cards from "../views/Cards.vue";
 
 Vue.use(VueRouter);
 
-const routes = [
+const routes: Array<RouteConfig> = [
   {
     path: "/",
-    name: "home",
+    name: "Home",
     component: Home,
   },
   {
-    path: "/memo",
-    name: "memo",
-    component: MemoDisplay,
+    path: "/cards",
+    name: "Cards",
+    component: Cards,
   },
 ];
 

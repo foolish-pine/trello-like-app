@@ -8,7 +8,7 @@ Vue.config.productionTip = false;
 
 import firebase from "firebase";
 // Your web app's Firebase configuration
-var firebaseConfig = {
+const firebaseConfig = {
   apiKey: "AIzaSyAjNIc4ojZcHOwDj77h2qCgeoD4i_rx2FQ",
   authDomain: "trello-like-app-2f587.firebaseapp.com",
   databaseURL: "https://trello-like-app-2f587.firebaseio.com",

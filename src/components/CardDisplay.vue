@@ -1,17 +1,17 @@
 <template>
-  <v-content :style="themeColor">
+  <v-content style="height: 100%">
     <v-container class="d-flex">
       <!-- カードを存在するだけ並べる -->
       <draggable
         group="cardGroup"
         animation="200"
-        v-model="$store.state.cards"
+        :list="cards"
         @end="updateCardOrder"
         class="d-flex"
         style="height: 100%"
       >
         <v-card
-          v-for="(card, cardIndex) in $store.state.cards"
+          v-for="(card, cardIndex) in cards"
           :key="card.id"
           width="300px"
           height="100%"
@@ -24,7 +24,7 @@
           </v-system-bar>
           <v-textarea
             :value="card.cardName"
-            @change="editCardName({cardId: card.id, value: $event})"
+            @change="editCardName(card.id, $event)"
             solo
             auto-grow
             flat
@@ -38,7 +38,7 @@
             <draggable
               group="memoGroup"
               animation="200"
-              v-model="card.memos"
+              :list="card.memos"
               @end="updateMemoOrder"
               :id="cardIndex"
             >
@@ -47,7 +47,7 @@
                   <v-card height="100%" class="d-flex mb-3">
                     <v-textarea
                       :value="memo.value"
-                      @change="editMemoValue({cardId: card.id, cardIndex: cardIndex, memoIndex: memoIndex, value: $event})"
+                      @change="editMemo(card.id, cardIndex, memoIndex, $event)"
                       solo
                       auto-grow
                       flat
@@ -56,7 +56,7 @@
                     ></v-textarea>
                     <v-icon
                       v-show="hover? true : false"
-                      @click="deleteMemo({cardId: card.id, cardIndex: cardIndex, memoIndex: memoIndex})"
+                      @click="deleteMemo(card.id, cardIndex, memoIndex)"
                       class="pr-1 memo-close-icon"
                     >mdi-close</v-icon>
                   </v-card>
@@ -69,7 +69,7 @@
                 flat
                 class="add-button"
                 :class="{ 'on-hover': hover }"
-                @click="addNewMemo({cardId: card.id, cardIndex: cardIndex})"
+                @click="addNewMemo(card.id, cardIndex)"
               >
                 <v-card-title class="px-3 py-2 body-1">
                   <v-icon class="mr-2">mdi-plus</v-icon>Add New Memo
@@ -96,36 +96,66 @@
   </v-content>
 </template>
 
-<script>
-import { mapActions, mapGetters } from "vuex";
+<script lang="ts">
+import { Component, Vue } from "vue-property-decorator";
 import draggable from "vuedraggable";
-import store from "../store";
+import AppModule from "../store/modules/app";
 
-export default {
-  name: "MemoDisplay",
+@Component({
   components: {
     draggable
-  },
-  data: () => ({}),
-  computed: {
-    ...mapGetters(["uid", "cards"]),
-    themeColor() {
-      return `background-color: ${store.state.themeColor} !important`;
-    }
-  },
-  methods: {
-    ...mapActions([
-      "addNewCard",
-      "deleteCard",
-      "editCardName",
-      "updateCardOrder",
-      "addNewMemo",
-      "deleteMemo",
-      "editMemoValue",
-      "updateMemoOrder"
-    ])
   }
-};
+})
+export default class CardDisplay extends Vue {
+  get uid() {
+    return AppModule.uid;
+  }
+
+  get themeColor() {
+    return `background-color: ${AppModule.themeColor} !important`;
+  }
+
+  get cards() {
+    return AppModule.cards;
+  }
+
+  addNewCard() {
+    AppModule.addNewCardAction();
+  }
+
+  deleteCard(cardId: string) {
+    AppModule.deleteCardAction(cardId);
+  }
+
+  editCardName(cardId: string, value: string) {
+    AppModule.editCardNameAction({ cardId, value });
+  }
+
+  updateCardOrder(event: any) {
+    AppModule.updateCardOrderAction(event);
+  }
+
+  addNewMemo(cardId: string, cardIndex: number) {
+    AppModule.addNewMemoAction({ cardId, cardIndex });
+  }
+
+  deleteMemo(cardId: string, cardIndex: number, memoIndex: number) {
+    AppModule.deleteMemoAction({ cardId, cardIndex, memoIndex });
+  }
+
+  editMemo(
+    cardId: string,
+    cardIndex: number,
+    memoIndex: number,
+    value: string
+  ) {
+    AppModule.editMemoAction({ cardId, cardIndex, memoIndex, value });
+  }
+
+  updateMemoOrder(event: any) {
+    AppModule.updateMemoOrderAction(event);
+  }
+}
 </script>
 
 <style lang="scss">
@@ -137,9 +167,6 @@ export default {
 }
 .container {
   max-width: none !important;
-}
-.card-container {
-  height: 100%;
 }
 .card {
   cursor: pointer;
@@ -176,7 +203,4 @@ textarea {
   z-index: 10;
   background-color: rgba(255, 255, 255, 0.8);
 }
-// .themeColor {
-//   background-color: #334433 !important;
-// }
 </style>
