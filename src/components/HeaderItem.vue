@@ -35,11 +35,14 @@
 </template>
 
 <script lang="ts">
-import { Component, Vue } from "vue-property-decorator";
+import { Component, Vue, Watch } from "vue-property-decorator";
+import { Debounce } from "vue-debounce-decorator";
 import AppModule from "../store/modules/app";
 
 @Component
 export default class HeaderItem extends Vue {
+  colorpicker: string = this.themeColor;
+
   get user() {
     return AppModule.user;
   }
@@ -66,12 +69,15 @@ export default class HeaderItem extends Vue {
     return AppModule.themeColor;
   }
 
-  get colorpicker(): string {
-    return AppModule.themeColor;
+  @Watch("themeColor")
+  themeColorChanged(themeColor: string) {
+    this.colorpicker = themeColor;
   }
 
-  set colorpicker(color: string) {
-    AppModule.setThemeColorAction(color);
+  @Debounce(200)
+  @Watch("colorpicker")
+  colorPickerChange(pickedColor: string) {
+    AppModule.setThemeColorAction(pickedColor);
   }
 
   pickColor(color: string) {

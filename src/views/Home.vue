@@ -14,7 +14,6 @@
 
 <script lang="ts">
 import { Component, Vue } from "vue-property-decorator";
-// import firebase from "firebase";
 import AppModule from "../store/modules/app";
 
 @Component

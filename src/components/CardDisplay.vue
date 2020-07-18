@@ -24,7 +24,7 @@
           </v-system-bar>
           <v-textarea
             :value="card.cardName"
-            @change="editCardName(card.id, $event)"
+            @input="editCardName(card.id, $event)"
             solo
             auto-grow
             flat
@@ -47,7 +47,7 @@
                   <v-card height="100%" class="d-flex mb-3">
                     <v-textarea
                       :value="memo.value"
-                      @change="editMemo(card.id, cardIndex, memoIndex, $event)"
+                      @input="editMemo(card.id, cardIndex, memoIndex, $event)"
                       solo
                       auto-grow
                       flat
@@ -99,6 +99,7 @@
 <script lang="ts">
 import { Component, Vue } from "vue-property-decorator";
 import draggable from "vuedraggable";
+import { Debounce } from "vue-debounce-decorator";
 import AppModule from "../store/modules/app";
 
 @Component({
@@ -123,12 +124,13 @@ export default class CardDisplay extends Vue {
     AppModule.addNewCardAction();
   }
 
-  deleteCard(cardId: string) {
-    AppModule.deleteCardAction(cardId);
-  }
-
+  @Debounce(1000)
   editCardName(cardId: string, value: string) {
     AppModule.editCardNameAction({ cardId, value });
+  }
+
+  deleteCard(cardId: string) {
+    AppModule.deleteCardAction(cardId);
   }
 
   updateCardOrder(event: any) {
@@ -139,10 +141,7 @@ export default class CardDisplay extends Vue {
     AppModule.addNewMemoAction({ cardId, cardIndex });
   }
 
-  deleteMemo(cardId: string, cardIndex: number, memoIndex: number) {
-    AppModule.deleteMemoAction({ cardId, cardIndex, memoIndex });
-  }
-
+  @Debounce(1000)
   editMemo(
     cardId: string,
     cardIndex: number,
@@ -150,6 +149,10 @@ export default class CardDisplay extends Vue {
     value: string
   ) {
     AppModule.editMemoAction({ cardId, cardIndex, memoIndex, value });
+  }
+
+  deleteMemo(cardId: string, cardIndex: number, memoIndex: number) {
+    AppModule.deleteMemoAction({ cardId, cardIndex, memoIndex });
   }
 
   updateMemoOrder(event: any) {

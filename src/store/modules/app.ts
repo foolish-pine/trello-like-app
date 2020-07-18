@@ -41,9 +41,7 @@ class AppModule extends VuexModule {
 
   @Mutation
   doLogout() {
-    this.themeColor = "#FFFFFFFF";
     this.user = null;
-    this.cards = [];
   }
 
   // stateのcardsをクリアする
@@ -75,26 +73,13 @@ class AppModule extends VuexModule {
     firebase
       .auth()
       .signInAnonymously()
-      .catch((error) => {
-        console.log(alert(error.message));
-      });
+      .catch(() => {});
   }
 
   // ログアウト処理
   @Action
   doLogoutAction() {
-    if (this.user?.isAnonymous) {
-      firebase
-        .firestore()
-        .collection("users")
-        .doc(this.uid)
-        .delete()
-        .then(() => {
-          firebase.auth().signOut();
-        });
-    } else {
-      firebase.auth().signOut();
-    }
+    firebase.auth().signOut();
     this.doLogout();
   }
 
@@ -125,6 +110,7 @@ class AppModule extends VuexModule {
           this.fetchThemeColorAction();
         }
       });
+    this.fetchCardsAction();
   }
 
   // ユーザーのカードを取得
@@ -197,20 +183,8 @@ class AppModule extends VuexModule {
     firebase
       .firestore()
       .collection(`users/${this.uid}/cards`)
-      .onSnapshot(
-        (snapshot) => {
-          snapshot.forEach((doc) => {
-            if (doc.id === cardId) {
-              firebase
-                .firestore()
-                .collection(`users/${this.uid}/cards`)
-                .doc(doc.id)
-                .delete();
-            }
-          });
-        },
-        () => {}
-      );
+      .doc(cardId)
+      .delete();
   }
 
   // カード名を編集

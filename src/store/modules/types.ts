@@ -1,6 +1,5 @@
 export interface AppState {
   themeColor: string;
-  colorpicker: string;
   colors: { [s: string]: string };
   user: firebase.User | null;
   cards: Cards[]
