@@ -16,10 +16,8 @@ export default class extends Vue {
       if (user) {
         // ログイン後ユーザー情報とユーザーのカードをセットする
         AppModule.setLoginUserAction(user);
-        AppModule.fetchCardsAction();
         this.$router.push("/cards", () => {});
       } else {
-        AppModule.doLogoutAction();
         this.$router.push("/", () => {});
       }
     });

@@ -73,7 +73,7 @@ export default class HeaderItem extends Vue {
   themeColorChanged(themeColor: string) {
     this.colorpicker = themeColor;
   }
-  
+
   @Debounce(200)
   @Watch("colorpicker")
   colorPickerChange(pickedColor: string) {

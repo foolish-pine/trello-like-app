@@ -124,7 +124,7 @@ export default class CardDisplay extends Vue {
     AppModule.addNewCardAction();
   }
 
-  @Debounce(2000)
+  @Debounce(1000)
   editCardName(cardId: string, value: string) {
     AppModule.editCardNameAction({ cardId, value });
   }
@@ -141,7 +141,7 @@ export default class CardDisplay extends Vue {
     AppModule.addNewMemoAction({ cardId, cardIndex });
   }
 
-  @Debounce(2000)
+  @Debounce(1000)
   editMemo(
     cardId: string,
     cardIndex: number,
