@@ -6,7 +6,8 @@
 
 <script lang="ts">
 import { Component, Vue } from "vue-property-decorator";
-import firebase from "firebase";
+import * as firebase from "firebase/app";
+import "firebase/auth";
 import AppModule from "./store/modules/app";
 
 @Component
@@ -16,9 +17,9 @@ export default class extends Vue {
       if (user) {
         // ログイン後ユーザー情報とユーザーのカードをセットする
         AppModule.setLoginUserAction(user);
-        this.$router.push("/cards", () => {});
+        this.$router.push({ name: "cards" }, () => {});
       } else {
-        this.$router.push("/", () => {});
+        this.$router.push({ name: "login" }, () => {});
       }
     });
   }

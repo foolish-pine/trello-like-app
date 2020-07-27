@@ -6,7 +6,9 @@ import {
   getModule,
 } from "vuex-module-decorators";
 import store from "@/store";
-import firebase from "firebase";
+import * as firebase from "firebase/app";
+import "firebase/auth";
+import "firebase/firestore";
 import { Cards } from "../modules/types";
 
 @Module({ dynamic: true, store, name: "AppModule", namespaced: true })
@@ -41,7 +43,9 @@ class AppModule extends VuexModule {
 
   @Mutation
   doLogout() {
+    this.themeColor = "#FFFFFFFF";
     this.user = null;
+    this.cards = [];
   }
 
   // stateのcardsをクリアする

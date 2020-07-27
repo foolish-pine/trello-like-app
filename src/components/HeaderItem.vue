@@ -1,10 +1,10 @@
 <template>
-  <v-app-bar v-if="uid" app flat dark :color="themeColor" height="80">
+  <v-app-bar app flat dark :color="themeColor" height="80">
     <v-toolbar-title class="app-title hidden-xs-only">My Memo Board.</v-toolbar-title>
 
     <v-spacer></v-spacer>
 
-    <div v-if="uid" class="d-flex align-center">
+    <div class="d-flex align-center">
       <v-menu transition="slide-y-transition">
         <template v-slot:activator="{ on }">
           <v-icon class="mr-5" v-on="on">mdi-dots-horizontal</v-icon>
@@ -28,7 +28,7 @@
         <img :src="photoURL" />
       </v-avatar>
       <div v-if="displayName" class="mr-5">{{ displayName }}</div>
-      <div v-if="user.isAnonymous" class="mr-8">ゲストさん</div>
+      <div v-else class="mr-8">ゲストさん</div>
       <v-btn @click="doLogout" outlined>ログアウト</v-btn>
     </div>
   </v-app-bar>
