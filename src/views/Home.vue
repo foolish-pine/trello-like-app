@@ -2,12 +2,14 @@
   <v-content class="teal">
     <v-container text-center justify-center>
       <h1 class="app-title mb-5">My Memo Board.</h1>
-      <div v-if="!uid" class="align-center mb-5">
-        <v-btn @click="doAnonymousLogin" large color="white" class="black--text">匿名でログイン</v-btn>
-      </div>
-      <div v-if="!uid" class="align-center">
-        <v-btn @click="doLogin" large color="white" class="black--text">Googleアカウントでログイン</v-btn>
-      </div>
+      <template v-if="!uid">
+        <div class="align-center mb-5">
+          <v-btn @click="doAnonymousLogin" large color="white" class="black--text">匿名でログイン</v-btn>
+        </div>
+        <div class="align-center">
+          <v-btn @click="doLogin" large color="white" class="black--text">Googleアカウントでログイン</v-btn>
+        </div>
+      </template>
     </v-container>
   </v-content>
 </template>
